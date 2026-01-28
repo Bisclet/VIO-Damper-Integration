@@ -1,0 +1,3 @@
+[submodule "BASALT_ROS2"]
+	path = BASALT_ROS2
+	url = https://github.com/Bisclet/BASALT_ROS2.git

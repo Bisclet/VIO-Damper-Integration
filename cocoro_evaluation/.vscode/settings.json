@@ -1,0 +1,14 @@
+{
+  "clangd.path": "/usr/bin/clangd",
+  "C_Cpp.intelliSenseEngine": "disabled",
+
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.tabCompletion": "on"
+}
