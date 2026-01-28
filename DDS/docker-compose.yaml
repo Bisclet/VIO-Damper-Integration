@@ -1,0 +1,15 @@
+services:
+  zenoh-bridge-ros2:
+    image: eclipse/zenoh-bridge-ros2dds:latest
+    container_name: zenoh-bridge-ros2
+    network_mode: host
+    ipc: host
+    environment:
+      #- ROS_DOMAIN_ID=<your_ID>
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+      - ROS_DISTRO=humble
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./assets/zenoh-config.json5:/config.json5:ro
+    command: ["-c", "/config.json5"]
+    restart: unless-stopped

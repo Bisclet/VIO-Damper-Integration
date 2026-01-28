@@ -1,0 +1,50 @@
+{
+  mode: "router",
+
+  connect: {
+    endpoints: [
+      "tcp/<peer_ip>:7447"
+    ]
+  },
+
+  listen: {
+    endpoints: [
+      "tcp/0.0.0.0:7447"
+    ]
+  },
+
+  scouting: {
+    multicast: {
+      enabled: true,
+      address: "224.0.0.224:7446",
+      interface: "auto",
+      autoconnect: { router: [], peer: ["router", "peer"] },
+      listen: true
+    },
+    gossip: {
+      enabled: true,
+      multihop: true,
+      autoconnect: { router: [], peer: ["router", "peer"] }
+    }
+  },
+
+  plugins: {
+    ros2dds: {
+      domain: 23,
+      ros_localhost_only: false,
+      ros_automatic_discovery_range: "SUBNET",
+      allow: {
+        publishers: [".*"],
+        subscribers: [".*"],
+        service_servers: [".*"],
+        service_clients: [".*"],
+        action_servers: [".*"],
+        action_clients: [".*"]
+      }
+    },
+
+    rest: {
+      http_port: 8000
+    }
+  }
+}

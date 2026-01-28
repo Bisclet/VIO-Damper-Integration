@@ -57,7 +57,6 @@ def generate_launch_description():
     )
 
     # --- Rosbag recording ---
-    '''
     rosbag_record = ExecuteProcess(
         cmd=[
             "ros2", "bag", "record",
@@ -66,11 +65,10 @@ def generate_launch_description():
         ],
         output="screen"
     )
-    '''
 
     return LaunchDescription([
         zed_launch,
         basalt_launch,
         metrics_node,
-        #rosbag_record
+        rosbag_record
     ])
