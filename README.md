@@ -29,12 +29,12 @@ source install/setup.zsh  # If using zsh
 
 The package has several launch files:
 
-*1)* Full Demo: Starts the ZED wrapper, Basalt, metric tools and rosbag recording.
+*1)* Full Demo: Starts the ZED wrapper, Basalt, metric tools, rosbag recording and ground truth estimation.
 ```bash
 ros2 launch cocoro_evaluation full_demo.launch.py
 ```
 
-*2)* Demo without rosbag recording.
+*2)* Demo without rosbag recording and ground truth estimation.
 ```bash
 ros2 launch cocoro_evaluation demo.launch.py
 ```

@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, EnvironmentVariable
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -48,6 +48,22 @@ def generate_launch_description():
             ]),
         }.items()
     )
+
+    # --- MAVROS PX4 launch ---
+    mavros_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare("mavros"),
+                "launch",
+                "px4.launch"
+            ])
+        ),
+        launch_arguments={
+            "fcu_url": "/dev/ttyACM0:921600",
+            "gcs_url": ["udp://@", EnvironmentVariable("QGC_IP")],
+        }.items()
+    )
+
 
     # --- Metrics node ---
     metrics_node = Node(
