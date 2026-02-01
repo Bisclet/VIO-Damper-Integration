@@ -4,6 +4,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, EnvironmentVariable
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.launch_description_sources import AnyLaunchDescriptionSource
+
 
 
 def generate_launch_description():
@@ -68,7 +70,7 @@ def generate_launch_description():
 
     # --- MAVROS PX4 launch ---
     mavros_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
+        AnyLaunchDescriptionSource(
             PathJoinSubstitution([
                 FindPackageShare("mavros"),
                 "launch",
@@ -86,6 +88,5 @@ def generate_launch_description():
         zed_launch,
         basalt_launch,
         metrics_node,
-        rosbag_record,
         mavros_launch
     ])
