@@ -1,17 +1,12 @@
 #! /bin/bash
 
-if [[ $(/usr/bin/id -u) -ne 0 ]]; then
-    echo "Not running as root"
-    exit
-fi
-
-./BASALT_ROS2/scripts/install_deps.sh
+sudo ./BASALT_ROS2/scripts/install_deps.sh
 
 ## Install MAVROS and dependencies
 
-apt install -y ros-$ROS_DISTRO-mavros*
+sudo apt install -y ros-$ROS_DISTRO-mavros*
 source /opt/ros/$ROS_DISTRO/setup.bash
-/opt/ros/$ROS_DISTRO/lib/mavros/install_geographiclib_datasets.sh 
+sudo /opt/ros/$ROS_DISTRO/lib/mavros/install_geographiclib_datasets.sh 
 
 ## Enable odom and gps_rtk mavros plugins
 
