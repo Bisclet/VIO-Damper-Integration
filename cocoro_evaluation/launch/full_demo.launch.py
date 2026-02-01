@@ -66,9 +66,26 @@ def generate_launch_description():
         output="screen"
     )
 
+    # --- MAVROS PX4 launch ---
+    mavros_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare("mavros"),
+                "launch",
+                "px4.launch"
+            ])
+        ),
+        launch_arguments={
+            "fcu_url": "/dev/ttyACM0:921600",
+            "gcs_url": ["udp://@", EnvironmentVariable("QGC_IP")],
+        }.items()
+    )
+
+
     return LaunchDescription([
         zed_launch,
         basalt_launch,
         metrics_node,
-        rosbag_record
+        rosbag_record,
+        mavros_launch
     ])
