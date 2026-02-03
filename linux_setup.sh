@@ -20,24 +20,24 @@ sudo tee /opt/ros/humble/share/mavros/launch/px4_pluginlists.yaml > /dev/null <<
       - cam_imu_sync
       - camera
       - cellular_status
-      - command
+      #- command
       - companion_process_status
-      - common
+      #- common
       - debug_value
       - distance_sensor
-      - esc_status
+      #- esc_status
       - esc_telemetry
       - extras
       - fake_gps
       - geofence
       - global_position
-      - gps_input
-      - gps_status
+      #- gps_input
+      #- gps_status
       - guided_target
       - hil
-      - home_position
+      #- home_position
       - image_pub
-      - imu
+      #- imu
       - landing_target
       - local_position
       - log_transfer
@@ -50,25 +50,25 @@ sudo tee /opt/ros/humble/share/mavros/launch/px4_pluginlists.yaml > /dev/null <<
       - obstacle_distance
       - optical_flow
       - onboard_computer_status
-      - param
+      #- param
       - play_tune
       - px4flow
       - rallypoint
       - rangefinder
-      - rc_io
+      #- rc_io
       - setpoint_accel
       - setpoint_attitude
       - setpoint_position
       - setpoint_raw
       - setpoint_trajectory
       - setpoint_velocity
-      - sys_status
-      - sys_time
+      #- sys_status
+      #- sys_time
       - tdr_radio
       - terrain
       - trajectory
-      - tunnel
-      - vfr_hud
+      #- tunnel
+      #- vfr_hud
       - vibration
       - vision_pose
       - vision_speed
@@ -77,7 +77,7 @@ sudo tee /opt/ros/humble/share/mavros/launch/px4_pluginlists.yaml > /dev/null <<
       - wheel_odometry
       - gimbal_control
       - obstacle_distance_3d
-      - open_drone_id
+      #- open_drone_id
       - sim_state
       - uas1
       - wind_estimation
