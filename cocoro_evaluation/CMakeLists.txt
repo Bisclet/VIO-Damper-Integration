@@ -16,6 +16,8 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
+
 
 find_package(rosidl_default_generators REQUIRED)
 
@@ -33,6 +35,30 @@ ament_export_dependencies(rosidl_default_runtime)
 # =====================
 # Executable
 # =====================
+add_executable(measure_intrinsics
+  src/measure_intrinsics.cpp
+)
+
+ament_target_dependencies(
+  measure_intrinsics
+  rclcpp
+  sensor_msgs
+)
+
+target_link_libraries(measure_intrinsics Eigen3::Eigen)
+
+set_target_properties(measure_intrinsics PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF
+)
+
+install(
+  TARGETS measure_intrinsics
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 add_executable(measure_metrics
   src/measure_metrics.cpp
 )
