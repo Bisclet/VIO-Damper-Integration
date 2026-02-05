@@ -120,8 +120,8 @@ class MainNode : public rclcpp::Node {
                 next += period;
 
                 if (zed.grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
-                    zed.retrieveImage(left_image_zed, VIEW::LEFT, MEM::GPU, new_image_size);
-                    zed.retrieveImage(right_image_zed, VIEW::RIGHT, MEM::GPU, new_image_size);
+                    zed.retrieveImage(left_image_zed, VIEW::LEFT, MEM::CPU, new_image_size);
+                    zed.retrieveImage(right_image_zed, VIEW::RIGHT, MEM::CPU, new_image_size);
 
                     std_msgs::msg::Header header;
                     header.stamp = this->now();
