@@ -16,7 +16,9 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 
 find_package(rosidl_default_generators REQUIRED)
@@ -35,23 +37,6 @@ ament_export_dependencies(rosidl_default_runtime)
 # =====================
 # Executable
 # =====================
-add_executable(odom_static_align
-  src/odom_static_align.cpp
-)
-
-ament_target_dependencies(
-  odom_static_align
-  rclcpp
-  sensor_msgs
-  tf2_ros
-)
-
-install(
-  TARGETS odom_static_align
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-
 add_executable(measure_intrinsics
   src/measure_intrinsics.cpp
 )
@@ -115,6 +100,11 @@ install(
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
+)
+
+install(PROGRAMS
+  src/trajectory_plotter.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 
