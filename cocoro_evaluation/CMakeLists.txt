@@ -35,6 +35,23 @@ ament_export_dependencies(rosidl_default_runtime)
 # =====================
 # Executable
 # =====================
+add_executable(odom_static_align
+  src/odom_static_align.cpp
+)
+
+ament_target_dependencies(
+  odom_static_align
+  rclcpp
+  sensor_msgs
+  tf2_ros
+)
+
+install(
+  TARGETS odom_static_align
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 add_executable(measure_intrinsics
   src/measure_intrinsics.cpp
 )
