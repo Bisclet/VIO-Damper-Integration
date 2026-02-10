@@ -102,8 +102,10 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
+file(GLOB PY_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.py")
+
 install(PROGRAMS
-  src/trajectory_plotter.py
+  ${PY_SCRIPTS}
   DESTINATION lib/${PROJECT_NAME}
 )
 

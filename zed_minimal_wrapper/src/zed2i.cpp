@@ -95,13 +95,13 @@ class MainNode : public rclcpp::Node {
 
                 auto imu_data = sensors_data.imu;
 
-                imu_msg.angular_velocity.x = imu_data.angular_velocity.x;
-                imu_msg.angular_velocity.y = imu_data.angular_velocity.y;
-                imu_msg.angular_velocity.z = imu_data.angular_velocity.z;
+                imu_msg.angular_velocity.x = imu_data.angular_velocity_uncalibrated.x;
+                imu_msg.angular_velocity.y = imu_data.angular_velocity_uncalibrated.y;
+                imu_msg.angular_velocity.z = imu_data.angular_velocity_uncalibrated.z;
 
-                imu_msg.linear_acceleration.x = imu_data.linear_acceleration.x;
-                imu_msg.linear_acceleration.y = imu_data.linear_acceleration.y;
-                imu_msg.linear_acceleration.z = imu_data.linear_acceleration.z;
+                imu_msg.linear_acceleration.x = imu_data.linear_acceleration_uncalibrated.x;
+                imu_msg.linear_acceleration.y = imu_data.linear_acceleration_uncalibrated.y;
+                imu_msg.linear_acceleration.z = imu_data.linear_acceleration_uncalibrated.z;
 
                 imu_pub_->publish(imu_msg);
 
@@ -117,11 +117,12 @@ class MainNode : public rclcpp::Node {
 
             while (!cleanup && rclcpp::ok()) {
 
-                next += period;
+                //next += period;
 
                 if (zed.grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
+                    
                     zed.retrieveImage(left_image_zed, VIEW::LEFT, MEM::CPU, new_image_size);
-                    zed.retrieveImage(right_image_zed, VIEW::RIGHT, MEM::CPU, new_image_size);
+                    zed.retrieveImage(right_image_zed, VIEW::LEFT_UNRECTIFIED, MEM::CPU, new_image_size);
 
                     std_msgs::msg::Header header;
                     header.stamp = this->now();
@@ -134,7 +135,7 @@ class MainNode : public rclcpp::Node {
                     right_pub_->publish(*right_msg);
                 }
 
-                std::this_thread::sleep_until(next);
+                //std::this_thread::sleep_until(next);
             }
         }
 
@@ -164,6 +165,8 @@ class MainNode : public rclcpp::Node {
             init_params.sensors_required = true;
             init_params.camera_disable_self_calib = false;
             init_params.depth_mode = DEPTH_MODE::NONE;
+            init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD;
+            init_params.coordinate_units = UNIT::METER;
 
             ERROR_CODE err = zed.open(init_params);
             if (err != ERROR_CODE::SUCCESS) {
@@ -187,11 +190,16 @@ class MainNode : public rclcpp::Node {
             right_image_ocv = slMat2cvMat(right_image_zed);
 
             // ---------------- ROS INIT ----------------
-            left_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/zed/left_img", rclcpp::SensorDataQoS());
 
-            right_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/zed/right_img", rclcpp::SensorDataQoS());
+            rclcpp::QoS qos = rclcpp::QoS(rclcpp::KeepAll())
+                    .reliable()
+                    .durability_volatile();
 
-            imu_pub_ = this->create_publisher<sensor_msgs::msg::Imu>("/zed/imu", rclcpp::SensorDataQoS());
+            left_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/zed/left_img", qos);
+
+            right_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/zed/right_img", qos);
+
+            imu_pub_ = this->create_publisher<sensor_msgs::msg::Imu>("/zed/imu", qos);
 
             imu_group_ = this->create_callback_group(
                 rclcpp::CallbackGroupType::Reentrant);
