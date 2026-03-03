@@ -18,12 +18,20 @@ class ImuFFTFromBag(Node):
 
         self.declare_parameter("bag_path", "")
         self.declare_parameter("topic", "/imu")
+        self.declare_parameter("storage_id", "sqlite3")  # default = db3
 
         bag_path = self.get_parameter("bag_path").value
         self.topic = self.get_parameter("topic").value
+        self.storage_id = self.get_parameter("storage_id").value
 
         if bag_path == "":
             self.get_logger().error("Parameter bag_path is empty")
+            exit(1)
+
+        if self.storage_id not in ["sqlite3", "mcap"]:
+            self.get_logger().error(
+                f"Invalid storage_id '{self.storage_id}'. Use 'sqlite3' or 'mcap'"
+            )
             exit(1)
 
         self.t = []
@@ -31,14 +39,17 @@ class ImuFFTFromBag(Node):
         self.ay = []
         self.az = []
 
-        self.get_logger().info(f"Reading bag: {bag_path}")
+        self.get_logger().info(
+            f"Reading bag: {bag_path} (storage: {self.storage_id})"
+        )
+
         self.read_bag(bag_path)
 
     def read_bag(self, bag_path):
 
         storage_options = rosbag2_py.StorageOptions(
             uri=bag_path,
-            storage_id="sqlite3"
+            storage_id=self.storage_id
         )
 
         converter_options = rosbag2_py.ConverterOptions(
@@ -51,6 +62,10 @@ class ImuFFTFromBag(Node):
 
         topic_types = reader.get_all_topics_and_types()
         type_map = {t.name: t.type for t in topic_types}
+
+        if self.topic not in type_map:
+            self.get_logger().error(f"Topic '{self.topic}' not found in bag")
+            exit(1)
 
         while reader.has_next():
             topic, data, stamp = reader.read_next()
@@ -97,47 +112,44 @@ def integrate_displacement(t, accel):
 
     dt = np.diff(t, prepend=t[0])
 
-    # remove bias
+    # Remove bias
     accel = accel - np.mean(accel)
 
-    # velocity
+    # Velocity
     vel = np.cumsum(accel * dt)
 
-    # remove linear drift
+    # Remove linear drift
     vel = vel - np.linspace(vel[0], vel[-1], len(vel))
 
-    # displacement
+    # Displacement
     disp = np.cumsum(vel * dt)
 
-    # remove drift again
+    # Remove drift again
     disp = disp - np.linspace(disp[0], disp[-1], len(disp))
 
-    # center
+    # Center
     disp = disp - np.mean(disp)
 
     return disp
+
 
 def annotate_top_peaks(ax, freqs, mags, n=3, min_sep=2.0):
 
     if len(freqs) == 0:
         return
 
-    # sort by magnitude descending
     order = np.argsort(mags)[::-1]
-
     chosen = []
 
     for i in order:
         f = freqs[i]
 
-        # enforce minimum frequency separation
         if all(abs(f - freqs[j]) >= min_sep for j in chosen):
             chosen.append(i)
 
         if len(chosen) == n:
             break
 
-    # draw annotations
     for i in chosen:
         f = freqs[i]
         m = mags[i]
@@ -149,6 +161,7 @@ def annotate_top_peaks(ax, freqs, mags, n=3, min_sep=2.0):
                     textcoords="offset points",
                     fontsize=9,
                     color='red')
+
 
 def plot_results(node):
 
@@ -181,8 +194,7 @@ def plot_results(node):
     axes[0, 2].set_xlabel("Hz")
     axes[0, 2].grid(True)
 
-
-    # displacement orbits
+    # Displacement orbits
     axes[1, 0].plot(dx, dy)
     axes[1, 0].set_title("Displacement Orbit XY")
     axes[1, 0].axis('equal')
@@ -198,10 +210,14 @@ def plot_results(node):
     axes[1, 2].axis('equal')
     axes[1, 2].grid(True)
 
-    fig.suptitle(f"IMU FFT + Displacement Orbits (IMU freq ≈ {fs:.1f} Hz)", fontsize=16)
+    fig.suptitle(
+        f"IMU FFT + Displacement Orbits (IMU freq ≈ {fs:.1f} Hz)",
+        fontsize=16
+    )
 
     plt.tight_layout()
     plt.show()
+
 
 def main():
     rclpy.init()
@@ -211,6 +227,7 @@ def main():
 
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
